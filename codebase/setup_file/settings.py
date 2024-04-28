@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # Local App
     'products_manage',
+    'Customer_Management',
 ]
 
 MIDDLEWARE = [
