@@ -42,6 +42,41 @@ class CustomerBioDetail(APIView):
         customerBio = get_object_or_404(CustomerBio, pk=pk)
         customerBio.delete()
         return Response(status=204)
-        
 
+class PurchesList(APIView):
+    #permission_classes = [IsAuthenticated]  # Uncomment for authentication
+    """this view handle the list of all the purches a cutomer made"""
+
+    def get(self, request):
+        purches = Purches.objects.all()
+        serializer = PurcheSerializer(purches, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PurcheSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+class PurchesDetail(APIView):
+    """This view handle detail of all purche"""
+
+    def get(self, request, pk):
+        purches = get_object_or_404(Purches, pk=pk)
+        serializer = PurcheSerializer(purches)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        purches = get_object_or_404(Purches, pk=pk)
+        serializer = PurcheSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, pk):
+        purches = get_object_or_404(Purches, pk=pk)
+        purches.delete()
+        return Response(status=204)
     

@@ -7,7 +7,6 @@ class CustomerBioSerializer(serializers.ModelSerializer):
         model = CustomerBio
         fields = ['id', 'first_name', 'last_name', 'phone_number', 'email', 'dob', 'address']
 
-
 class PurcheSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purches
