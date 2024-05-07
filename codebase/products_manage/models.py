@@ -8,8 +8,16 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     stock = models.PositiveIntegerField(default=0)
+    reorder_point = models.PositiveIntegerField(default=0)
 
+    
     def __str__(self) -> str:
+        """
+        Return a string representation of the object.
+
+        Returns:
+            str: The name of the object.
+        """
         return self.name
 
 class Price(models.Model):
