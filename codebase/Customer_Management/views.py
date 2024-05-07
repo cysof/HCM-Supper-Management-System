@@ -1,82 +1,56 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework.views import APIView
+from rest_framework import generics, status, viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .models import Purches, CustomerBio
-from .serializers import CustomerBioSerializer, PurcheSerializer
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from .serializers import CustomUserSerializer
+from .models import CustomUser
 
+class CustomUserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
 
-class CustomerBioList(APIView):
-    #permission_classes = [IsAuthenticated]
+class UserCreateAPIView(generics.CreateAPIView):
+    """
+    API endpoint that allows users to be created.
+    """
+    serializer_class = CustomUserSerializer
+    permission_classes = [AllowAny]
 
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        """
+        Handles the HTTP POST request to create a new authentication token for a user.
 
-    def get(self, request):
-        customerBio = CustomerBio.objects.all()
-        serializer = CustomerBioSerializer(customerBio, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request):
-        serializer = CustomerBioSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-    
-class CustomerBioDetail(APIView):
-    #permission_classes = [IsAuthenticated]
+        Parameters:
+            request (HttpRequest): The HTTP request object.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
 
-    def get(self, request, pk):
-        customerBio = get_object_or_404(CustomerBio, pk=pk)
-        serializer = CustomerBioSerializer(customerBio)
-        return Response(serializer.data)
-    
-    def put(self, request, pk):
-        customerBio = get_object_or_404(CustomerBio, pk=pk)
-        serializer = CustomerBioSerializer(data=request.data)
-        if serializer.is_valid:
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-    
-    def delete(self, request, pk):
-        customerBio = get_object_or_404(CustomerBio, pk=pk)
-        customerBio.delete()
-        return Response(status=204)
+        Returns:
+            Response: The HTTP response object containing the generated token.
 
-class PurchesList(APIView):
-    #permission_classes = [IsAuthenticated]  # Uncomment for authentication
-    """this view handle the list of all the purches a cutomer made"""
+        Raises:
+            ValidationError: If the serializer fails to validate the request data.
 
-    def get(self, request):
-        purches = Purches.objects.all()
-        serializer = PurcheSerializer(purches, many=True)
-        return Response(serializer.data)
+        """
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        serializer = PurcheSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+class UserProfileAPIView(generics.RetrieveUpdateAPIView):
+    """
+    API endpoint that allows users to view and update their profile.
+    """
+    serializer_class = CustomUserSerializer
 
-class PurchesDetail(APIView):
-    """This view handle detail of all purche"""
-
-    def get(self, request, pk):
-        purches = get_object_or_404(Purches, pk=pk)
-        serializer = PurcheSerializer(purches)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        purches = get_object_or_404(Purches, pk=pk)
-        serializer = PurcheSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-
-    def delete(self, request, pk):
-        purches = get_object_or_404(Purches, pk=pk)
-        purches.delete()
-        return Response(status=204)
-    
+    def get_object(self):
+        """
+        Retrieves and returns the user object associated with the current request.
+        """
+        return self.request.user
