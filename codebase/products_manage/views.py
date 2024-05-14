@@ -106,6 +106,15 @@ class CartItemViewSet(viewsets.ModelViewSet):
         return Response(CartItemSerializer(cart_item).data, status=status.HTTP_200_OK)
 
     def calculate_total_price(self, request):
+        """
+        Calculate the total price of items in the cart and return the total price in a Response object.
+        
+        Parameters:
+            request: The request object.
+        
+        Returns:
+            Response: A Response object containing the total price.
+        """
         cart_items = self.get_queryset()
         total_price = self.calculate_total_price(cart_items)
         return Response({'total_price': total_price}, status=status.HTTP_200_OK)
