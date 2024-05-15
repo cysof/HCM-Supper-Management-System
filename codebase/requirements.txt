@@ -16,3 +16,4 @@ folium==0.16.0
 django-cleanup==8.1.0
 Pillow==10.3.0
 django-sass-processor==1.4
+drf-yasg==1.21.7

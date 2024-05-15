@@ -1,11 +1,9 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from products_manage .models import Product, Price
+from products_manage.models import Price,Product
 
-"""Customer_Management this model manage customer information and their
-order in the portal.
-"""
-
-class CustomerBio(models.Model):
+class CustomUser(AbstractUser):
+    # Your custom fields and methods here
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=16)
@@ -13,12 +11,20 @@ class CustomerBio(models.Model):
     dob = models.DateField()
     address = models.CharField(max_length=150)
 
-    def __str__(self) -> str:
-        return self.first_name
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_user_groups',
+        related_query_name='custom_user_group',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_permissions',
+        related_query_name='custom_user_permission',
+    )
 
 
 class Purches(models.Model):
-    customer = models.ForeignKey(CustomerBio, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product,related_name='purches')
     price = models.ForeignKey(Price, on_delete=models.CASCADE)
 

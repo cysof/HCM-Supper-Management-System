@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     # frameworks
     'rest_framework',
 
+    # third party
+    'drf_yasg',
+
     # Local App
     'products_manage',
     'Customer_Management',

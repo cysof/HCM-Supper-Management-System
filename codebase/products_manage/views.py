@@ -1,44 +1,67 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+
+from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .models import Product
-from .serializers import ProductSerializer
+from rest_framework.decorators import action
+from rest_framework.decorators import api_view
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi 
 
 
-class ProductList(APIView):
-   # permission_classes = [IsAuthenticated]
+from .models import Product, CartItem
+from .serializers import ProductSerializer, CartItemSerializer
 
-    def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
-    def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    # Other CRUD operations for Product objects
+    
+    def check_low_product(self, request, product_id):
+        quantity_threshold = 5
+        product = get_object_or_404(Product, id=product_id)
+        if product.stock_quantity < quantity_threshold:
+            return Response({"message": "Low product quantity"})
+        else:
+            return Response({"message": "Sufficient product quantity"})
 
+    @action(detail=True, methods=['GET'])
+    def check_low_product_detail(self, request, pk=None):
+        return self.check_low_product(request, pk)
 
-class ProductDetail(APIView):
-    #permission_classes = [IsAuthenticated]
+    # Other methods for ProductViewSet
 
-    def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
+class CartItemViewSet(ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
 
-    def put(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+    def calculate_total_cost(self, request):
+        """
+        Calculate the total cost of items in the cart and return the total cost in a Response object.
+        """
+        cart_items = self.get_queryset()
+        total_cost = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
+        return Response({'total_cost': total_cost}, status=status.HTTP_200_OK)
 
-    def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        product.delete()
-        return Response(status=204)  # No content returned on successful deletion
+    def list(self, request):
+        cart_items = self.get_queryset()
+        return Response(CartItemSerializer(cart_items, many=True).data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        cart_item = self.get_object()
+        return Response(CartItemSerializer(cart_item).data, status=status.HTTP_200_OK)
+
+    # Other CRUD operations for CartItem objects
+
+@api_view(['GET'])
+@swagger_auto_schema(
+    operation_id='get_products',
+    tags=['Products'],
+    responses={200: openapi.Response(description='List of products')},
+)
+def get_products(request):
+    # Your view logic for getting products
+    return Response()
