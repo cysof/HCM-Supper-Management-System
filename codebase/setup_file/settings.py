@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     # frameworks
     'rest_framework',
 
+    # third party apps
+    'drf_yasg',
+
     # Local App
     'products_manage',
     'Customer_Management',
@@ -130,3 +133,19 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'cp4reallife@gmail.com'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True  # Set to True if using TLS, False if not
+
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+    'VALIDATOR_URL': 'http://localhost:8189',
+
+}
+
+REDOC_SETTINGS = {
+   'LAZY_RENDERING': False,
+}
+

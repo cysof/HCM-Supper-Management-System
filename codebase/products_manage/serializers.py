@@ -17,11 +17,11 @@ class ProductSerializer(serializers.ModelSerializer):
 class PriceSerializer(serializers.ModelSerializer):
     class Mets:
         model = Price
-        fields = ['Price', 'product']
+        fields = ['Price','created_at', 'product']
 
 
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['id','name', 'quantity']
+        fields = ['id','name','price', 'quantity']
     

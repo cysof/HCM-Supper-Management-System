@@ -7,6 +7,11 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework import status
+from rest_framework.decorators import api_view
+
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from .models import Product, CartItem
 from .serializers import ProductSerializer, CartItemSerializer
@@ -87,15 +92,15 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = CartItem.objects.all()
         return queryset
+    
 
-    def calculate_total_price(self, cart_items):
+    def calculate_total_cost(self, request):
         """
-        Calculate the total price of items in the cart.
+        Calculate the total cost of items in the cart and return the total cost in a Response object.
         """
-        total_price = 0
-        for cart_item in cart_items:
-            total_price += cart_item.product.price * cart_item.quantity
-        return total_price
+        cart_items = self.get_queryset()
+        total_cost = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
+        return Response({'total_cost': total_cost}, status=status.HTTP_200_OK)
 
     def list(self, request):
         cart_items = self.get_queryset()
@@ -118,3 +123,15 @@ class CartItemViewSet(viewsets.ModelViewSet):
         cart_items = self.get_queryset()
         total_price = self.calculate_total_price(cart_items)
         return Response({'total_price': total_price}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@swagger_auto_schema(
+    operation_id='get_products',  # Optional: Custom operation ID
+    tags=['Products'],  # Group endpoint with a tag
+    responses={200: openapi.Response(description='List of products')},
+    # ... other swagger options
+)
+def get_products(request):
+    # ... your view logic
+    return Response()

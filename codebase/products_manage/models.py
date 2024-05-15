@@ -41,9 +41,15 @@ class Product(models.Model):
 
 class Price(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self) -> str:
+        """
+        Return a string representation of the object.
+        """
+        return str(self.price)
+    
 class CartItem(models.Model):
     name = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.ForeignKey(Price, on_delete=models.CASCADE)
