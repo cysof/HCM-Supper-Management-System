@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Purches, Product, Price
+from .models import CustomUser, Purches, Order, OrderItem
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,3 +10,13 @@ class PurchesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purches
         fields = ['id', 'customer', 'products', 'price']
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'total', 'status', 'created_at']
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'order', 'product', 'quantity', 'price']

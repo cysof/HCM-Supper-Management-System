@@ -3,6 +3,8 @@ from django.db import models
 """Model for products. this will house the list of all products in the app
 """
 
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=150, blank=True)
@@ -50,3 +52,4 @@ class Price(models.Model):
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
+
