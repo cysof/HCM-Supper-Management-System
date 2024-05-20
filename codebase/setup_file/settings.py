@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
+import dj_database_url
 from django.core.management import execute_from_command_line
 
 
@@ -17,8 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
-
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -66,7 +66,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'setup_file.urls'
 
@@ -99,18 +98,24 @@ WSGI_APPLICATION = 'setup_file.wsgi.application'
     #}
 #}
 
+#DATABASES = {
+ #   'default': {
+  #      'ENGINE': 'django.db.backends.postgresql',
+   #     'NAME': os.getenv('DB_NAME'),
+    #    'USER': os.getenv('DB_USER'),
+     #   'PASSWORD': os.getenv('DB_PASSWORD'),
+      # 'PORT': os.getenv('DB_PORT', '5432'),
+   # }
+#}
+
+# Replace the SQLite DATABASES configuration with PostgreSQL:
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+        'default': dj_database_url.config(
+            default='postgresql://postgres:postgres@localhost:5432/setup_file',
+            conn_max_age=600
+        )
 }
 
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 
 # Password validation
@@ -163,7 +168,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Media files (Uploaded by users)
