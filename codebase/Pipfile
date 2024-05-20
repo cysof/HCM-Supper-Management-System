@@ -26,6 +26,7 @@ django-allauth = "==0.63.1"
 python-dotenv = "*"
 whitenoise = "*"
 gunicorn = "*"
+python-decouple = "*"
 
 [dev-packages]
 
