@@ -3,24 +3,42 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from .serializers import CustomUserSerializer, PurchesSerializer, OrderSerializer, OrderItemSerializer
-from .models import CustomUser, Purches, Order, OrderItem
-from django.db.models import Sum
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.exceptions import ValidationError
+
+from .serializers import UserDetailsSerializer
+
+from .models import UserManager,User
+from django.db.models import F, Sum
+from django.db import IntegrityError
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
+    queryset = User.objects.all()
+    serializer_class = UserDetailsSerializer
 
 class UserCreateAPIView(generics.CreateAPIView):
     """
     API endpoint that allows users to be created.
     """
-    serializer_class = CustomUserSerializer
+    serializer_class = UserDetailsSerializer
     permission_classes = [AllowAny]
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        try:
+            self.perform_create(serializer)
+        except IntegrityError as e:
+            if 'UNIQUE constraint' in str(e):
+                return Response({"error": "Email or username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred. Please try again."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         """
@@ -48,7 +66,7 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
     """
     API endpoint that allows users to view and update their profile.
     """
-    serializer_class = CustomUserSerializer
+    serializer_class = UserDetailsSerializer
 
     def get_object(self):
         """
@@ -56,109 +74,7 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
         """
         return self.request.user
     
-class PurchesViewSet(viewsets.ModelViewSet):
-    queryset = Purches.objects.all()
-    serializer_class = PurchesSerializer
-
-    def total_purchase_amount(self, request, customer_id):
-        total_amount = Purches.objects.filter(customer_id=customer_id).aggregate(total_amount=Sum('price__amount'))['total_amount']
-        return Response({'customer_id': customer_id, 'total_purchase_amount': total_amount})
-
-class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-
-    def create(self, request, *args, **kwargs):
-        """
-        Handles the HTTP POST request to create an order for a user.
-
-        Parameters:
-            request (HttpRequest): The HTTP request object.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            Response: The HTTP response object containing the created order.
-
-        Raises:
-            ValidationError: If the serializer fails to validate the request data.
-
-        """
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            return Order.objects.filter(user=user)
-        return Order.objects.none()
-
-class OrderItemViewSet(viewsets.ModelViewSet):
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
-
-    def create(self, request, *args, **kwargs):
-        """
-        Handles the HTTP POST request to create an order item for an order.
-
-        Parameters:
-            request (HttpRequest): The HTTP request object.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            Response: The HTTP response object containing the created order item.
-
-        Raises:
-            ValidationError: If the serializer fails to validate the request data.
-
-        """
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def update(self, request, *args, **kwargs):
-        """
-        Handles the HTTP PUT request to update an order item for an order.
-
-        Parameters:
-            request (HttpRequest): The HTTP request object.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            Response: The HTTP response object containing the updated order item.
-
-        Raises:
-            ValidationError: If the serializer fails to validate the request data.
-
-        """
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def destroy(self, request, *args, **kwargs):
-        """
-        Handles the HTTP DELETE request to delete an order item for an order.
-
-        Parameters:
-            request (HttpRequest): The HTTP request object.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            Response: The HTTP response object containing the deleted order item.
-
-        """
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserDetailsSerializer
+    parser_classes = [MultiPartParser, FormParser]

@@ -5,16 +5,11 @@ from .views import (
     UserCreateAPIView, 
     CustomAuthToken, 
     UserProfileAPIView, 
-    PurchesViewSet,
-    OrderViewSet,
-    OrderItemViewSet
+    
 )
 
 router = DefaultRouter()
 router.register(r'users', CustomUserViewSet, basename='user')
-router.register(r'purches', PurchesViewSet, basename='purches')
-router.register(r'orders', OrderViewSet, basename='orders')
-router.register(r'order-items', OrderItemViewSet, basename='order-items')
 
 urlpatterns = [
     path('users/create/', UserCreateAPIView.as_view(), name='user-create'),
