@@ -25,6 +25,7 @@ drf-yasg = "*"
 django-allauth = "==0.63.1"
 python-dotenv = "*"
 whitenoise = "*"
+gunicorn = "*"
 
 [dev-packages]
 
