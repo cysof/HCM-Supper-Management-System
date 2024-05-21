@@ -8,6 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view
+from rest_framework import permissions
 
 
 from drf_yasg.utils import swagger_auto_schema
@@ -26,6 +27,7 @@ from .serializers import (ProductSerializer,
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=True, methods=['GET'])
     def check_low_product(self, request, pk=None):
@@ -39,6 +41,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAdminUser]
 
     @action(detail=True, methods=['GET'])
     def check_low_product_detail(self, request, pk=None):
@@ -81,6 +84,7 @@ class CartItemViewSet(ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         """

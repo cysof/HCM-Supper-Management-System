@@ -1,5 +1,5 @@
 from django.db import models
-from Customer_Management.models import User
+from accounts.models import CustomUser
 
 """Model for products. this will house the list of all products in the app
 """
@@ -64,7 +64,7 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=ORDER_STATUS, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
 

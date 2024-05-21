@@ -25,12 +25,16 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path('', include('products_manage.urls')),
-    path('api/', include('Customer_Management.urls')),
-    path('accounts/', include('allauth.urls')),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('api/', include('accounts.urls')),
+    #path('/', include('Customer_Management.urls')),
+    #path('accounts/', include('allauth.urls')),
+    #path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+   
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 if settings.DEBUG:

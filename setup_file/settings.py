@@ -18,7 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
+DEBUG = True
+#DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -50,7 +51,8 @@ INSTALLED_APPS = [
 
     # Local App
     'products_manage',
-    'Customer_Management',
+    #'Customer_Management',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -91,12 +93,12 @@ WSGI_APPLICATION = 'setup_file.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-#DATABASES = {
- #   'default': {
-  #      'ENGINE': 'django.db.backends.sqlite3',
-   #     'NAME': BASE_DIR / 'db.sqlite3',
-    #}
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 #DATABASES = {
  #   'default': {
@@ -109,12 +111,11 @@ WSGI_APPLICATION = 'setup_file.wsgi.application'
 #}
 
 # Replace the SQLite DATABASES configuration with PostgreSQL:
-DATABASES = {
-        'default': dj_database_url.config(
-            default='postgresql://postgres:postgres@localhost:5432/setup_file',
-            conn_max_age=600
-        )
-}
+#DATABASES = {
+ #       'default': dj_database_url.config(
+  ##         conn_max_age=600
+    #    )
+#}
 
 
 
@@ -141,15 +142,15 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
          'rest_framework.authentication.BasicAuthentication',
          'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
+         'rest_framework.authentication.TokenAuthentication',
         #'rest_framework_simplejwt.authentication.JWTAuthentication',
         
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permission.DjangoModePermissionOrAnonReadOnly'
-        'rest_framework.permissions.IsAuthenticated',
+         # 'rest_framework.permission.DjangoModePermissionOrAnonReadOnly'
+        #'rest_framework.permissions.IsAuthenticated',
     ],
-    'USER_DETAILS_SERIALIZER': 'Customer_Management.serializer.UserDetailsSerializer'
+    #'USER_DETAILS_SERIALIZER': 'Customer_Management.serializer.UserDetailsSerializer'
 }
 
 # Internationalization
@@ -185,28 +186,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #costum user set up
 
-AUTH_USER_MODEL = 'Customer_Management.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
-ACCOUNT_EMAIL_REQUIRED=False
+ACCOUNT_EMAIL_REQUIRED=True
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
+    #'django.contrib.auth.backends.ModelBackend',
 
     # `allauth` specific authentication methods, such as login by email
-    #'allauth.account.auth_backends.AuthenticationBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        'APP': {
-            'client_id': '123',
-            'secret': '456',
-            'key': ''
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
         }
     }
 }
