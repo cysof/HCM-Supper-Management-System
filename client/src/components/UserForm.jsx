@@ -17,19 +17,31 @@ const UserForm = () => {
   const toggleCPasswordVsisibility = () => {
     setVisisibleCPassword(!visibleCPassword);
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials({ ...credentials, [name]: value });
+    console.log(credentials);
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(credentials);
+    // hit endpoint + error handling
+  };
   return (
     <section className="userform-component">
-      <Form className="border border-primary-subtle p-4">
+      <Form
+        className="border border-primary-subtle p-4"
+        onSubmit={handleSubmit}
+      >
         <h2>Sign Up</h2>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter username"
+            name="username"
             value={credentials.username}
-            onChange={(e) =>
-              setCredentials({ ...credentials, username: e.target.value })
-            }
+            onChange={(e) => handleChange(e)}
           />
         </Form.Group>
 
@@ -39,12 +51,10 @@ const UserForm = () => {
             <Form.Control
               type={visiblePassword ? "text" : "password"}
               placeholder="Password"
+              className="password-input"
               name="password"
               value={credentials.password}
-              className="password-input"
-              onChange={(e) =>
-                setCredentials({ ...credentials, password: e.target.value })
-              }
+              onChange={(e) => handleChange(e)}
             />
             <span onClick={toggleVisisbility}>
               {visiblePassword ? "Hide" : "Show"}
@@ -60,15 +70,14 @@ const UserForm = () => {
               name="cpassword"
               value={credentials.cpassword}
               className="password-input"
-              onChange={(e) =>
-                setCredentials({ ...credentials, cpassword: e.target.value })
-              }
+              onChange={(e) => handleChange(e)}
             />
             <span onClick={toggleCPasswordVsisibility}>
               {visibleCPassword ? "Hide" : "Show"}
             </span>
           </div>
         </Form.Group>
+        <NavLink to="/">Already have an account? Login</NavLink>
         <div className="next-btn-div">
           <NavLink to="/signup/profile">
             <Button variant="primary" type="submit">

@@ -101,6 +101,7 @@
   width: 60%;
   padding: 20px;
   border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 .profile-component Form h2 {
   font-size: 1.75rem;
@@ -113,7 +114,35 @@
   display: flex;
   justify-content: space-between;
 }
-
+/*  login component  */
+.login-component {
+  width: 55%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-component Form {
+  width: 60%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+.login-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.login-btn > *:first-child {
+  margin-bottom: 20px;
+}
+.login-component Form h2 {
+  font-size: 1.75rem;
+  margin-bottom: 10px;
+  color: var(--font-dark-color);
+  text-align: center;
+}
 /* MEDIA QUERIES */
 @media screen and (max-width: 980px) {
   /* animation-component */
@@ -131,10 +160,18 @@
   .userform-component {
     width: 100%;
   }
+  /* login component */
+  .login-component {
+    width: 100%;
+  }
 }
 @media screen and (max-width: 768px) {
   /* userform component */
   .userform-component Form {
+    width: 80%;
+  }
+  /* login component */
+  .login-component {
     width: 80%;
   }
   /* profile component */
