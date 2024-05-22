@@ -9,7 +9,7 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 
 #make migration
-python manage.py makemigration
+python manage.py makemigrations
 python manage.py migrate
 
 if [[ $CREATE_SUPERUSER ]];
