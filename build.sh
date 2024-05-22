@@ -8,6 +8,9 @@ pip install -r requirements.txt
 # Convert static asset files
 python manage.py collectstatic --no-input
 
+#make migration
+python manage.py makemigration
+python manage.py migrate
 
 if [[ $CREATE_SUPERUSER ]];
 then
