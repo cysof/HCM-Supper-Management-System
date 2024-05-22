@@ -15,7 +15,7 @@ custom_router = SimpleRouter()
 
 
 # custom_router.register(r'check-stock', CheckLowProductViewSet, basename='check-stock')
-
+router.register(r'products', ProductViewSet, basename='products')
 router.register(r'category', CategoryViewSet, basename='category')
 router.register(r'cart-items', CartItemViewSet, basename='cart-items')
 router.register(r'orders', OrderViewSet, basename='orders')
