@@ -27,7 +27,7 @@ from .serializers import (ProductSerializer,
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     @action(detail=True, methods=['GET'])
     def check_low_product(self, request, pk=None):
