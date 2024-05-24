@@ -1,4 +1,11 @@
 from django.contrib import admin
 from .models import CustomUser
 
-admin.site.register(CustomUser)
+
+
+
+class CustomAdmin(admin.ModelAdmin):
+    list_display = ['username', 'is_active']
+
+
+admin.site.register(CustomUser, CustomAdmin)

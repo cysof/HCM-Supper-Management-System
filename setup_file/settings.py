@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 ALLOWED_HOSTS = ['*']
 
@@ -93,11 +93,12 @@ WSGI_APPLICATION = 'setup_file.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-#DATABASES = {
- #   'default': {
-  #      'ENGINE': 'django.db.backends.sqlite3',
-   ##}
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+   }
+}
 
 #DATABASES = {
  #   'default': {
@@ -110,11 +111,11 @@ WSGI_APPLICATION = 'setup_file.wsgi.application'
 #}
 
 # Replace the SQLite DATABASES configuration with PostgreSQL:
-DATABASES = {
-        'default': dj_database_url.config(
-           conn_max_age=600
-        )
-}
+#DATABASES = {
+ #       'default': dj_database_url.config(
+  #         conn_max_age=600
+   #     )
+#}
 
 
 
